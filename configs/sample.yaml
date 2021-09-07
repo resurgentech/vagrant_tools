@@ -1,0 +1,39 @@
+machines:
+  path: "machines"
+  vagrant_provider: libvirt
+  list:
+    centos8:
+      vagrant:
+        box: centos/8
+      machine_template: default
+    ubuntu2004:
+      vagrant:
+        box: generic/ubuntu2004
+      machine_template: default
+machine_templates:
+  default:
+    vagrant:
+      memory: 2048
+      cpus: 1
+    ansible:
+      ansible_user: vagrant
+      ansible_password: vagrant
+      ansible_become: true
+vagrantfile_templates:
+  default:
+    "# -*- mode: ruby -*-\n
+    # vi: set ft=ruby :\n
+    Vagrant.configure(\"2\") do |config|\n
+     \thostname = \"{hostname}\"\n
+     \tlocale = \"en_US.UTF.8\"\n
+     \t# Box\n
+     \tconfig.vm.box = \"{box}\"\n
+     \tconfig.vm.synced_folder \".\", \"/vagrant\", disabled: true\n
+     \tconfig.vm.provider \"libvirt\" do |v|\n
+     \t\tv.memory = {memory}\n
+     \t\tv.cpus = {cpus}\n
+     \tend\n
+     end"
+children:
+  centos8:
+  ubuntu2004:

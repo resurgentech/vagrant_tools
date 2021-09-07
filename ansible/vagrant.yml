@@ -1,0 +1,35 @@
+---
+- name: install for vagrant_tools
+  hosts: all, localhost
+#  remote_user: root
+  tasks:
+
+    - name: Ubuntu Common development tools
+      apt:
+        name: [ build-essential, cmake, git, libncurses5-dev, libncursesw5-dev]
+        state: present
+
+    - name: Create symbolic link libncursesw5
+      file:
+        src: /usr/lib/x86_64-linux-gnu/libncursesw.so.6
+        dest: /usr/lib/x86_64-linux-gnu/libncursesw.so.5
+        state: link
+
+    - name: Install Vagrant
+      include_role:
+        name: andrewrothstein.vagrant
+
+    - name: Install Vagrant libvirt provider
+      shell: vagrant plugin install vagrant-libvirt
+
+    - name: Install Vagrant esxi provider
+      shell: vagrant plugin install vagrant-vmware-esxi
+
+    - name: Install Vagrant reload plugin
+      shell: vagrant plugin install vagrant-reload
+
+    - name: golang
+      include_role:
+        name: gantsign.golang
+      vars:
+        golang_gopath: $HOME/go

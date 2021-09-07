@@ -1,0 +1,87 @@
+machines:
+  path: "machines" #stores machines_path, relative path for machines folders
+  vagrant_provider: vmware_esxi
+  list:  #list of machine definitions each child defines a vm
+    kubenode1:
+      vagrant:  #Any key here will be used to try to override keys in the vagrantfile_template
+        node: kubnode0
+        hostname: kubhost0
+        memory: 2048
+        cpus: 1
+      ansible:  #Will be added to ansible host definition
+        ansible_user: vagrant
+        ansible_password: vagrant
+        ansible_become: true
+      vagrantfile_template: default  #Vagrantfile template. If not specified defaults to "default:"
+      machine_template: default #data from vagrant: and ansible: will overwrite values from default.
+    kubenode2:
+      vagrant:
+        memory: 2100 #Any parameters specified overrides defaults
+      machine_template: default  #use default: config from machine defaults
+    kubenode3:  #With no defined parameters defaults to 'machine_template: default'  'vagrantfile_template: default'
+machine_templates:
+  default:
+    vagrant:
+      memory: 4096
+      cpus: 8
+      macaddress: 00:50:56:4f:DD:01
+      box: generic/ubuntu1804
+      esxi_virtual_network: "VM Network"
+      esxi_disk_store: "5100_1"
+      storagevolumesize: 10
+    ansible:
+      ansible_user: vagrant
+      ansible_password: vagrant
+      ansible_become: true
+vagrantfile_templates:
+  default:
+    "
+    # -*- mode: ruby -*-\n
+    # vi: set ft=ruby :\n
+    Vagrant.configure(\"2\") do |vconfig|\n
+    \thostname = \"{hostname}\"\n
+    \tvconfig.vm.define \"{node}\" do |config|\n
+    \t\tconfig.vm.box = \"{box}\"\n
+    \t\tconfig.vm.guest = :linux\n
+    \t\tconfig.vm.boot_timeout = 100\n
+    \t\tconfig.vm.graceful_halt_timeout = 100\n
+    \t\tconfig.vm.synced_folder \".\", \"/vagrant\", disabled: true\n
+    \t\tconfig.vm.provider :vmware_esxi do |esxi|\n
+    \t\t\tesxi.esxi_hostname = \"{esxi_hostname}\"\n
+    \t\t\tesxi.esxi_username = \"{esxi_username}\"\n
+    \t\t\tesxi.esxi_password = \"{esxi_password}\"\n
+    \t\t\tesxi.esxi_virtual_network = \"{esxi_virtual_network}\"\n
+    \t\t\tesxi.esxi_disk_store = \"{esxi_disk_store}\"\n
+    \t\t\tesxi.guest_memsize = {memory}\n
+    \t\t\tesxi.guest_numvcpus = {cpus}\n
+    \t\t\tesxi.guest_mac_address = [\"{macaddress}\"]\n
+    \t\t\tesxi.guest_storage = \"{storagevolumesize}\"\n
+    \t\tend\n
+    \tend\n
+    \tvconfig.vm.provision \"shell\", inline: <<-SHELL\n
+    \techo \"vagrant ALL=(ALL) NOPASSWD: ALL\" > /etc/sudoers.d/vagrant\n
+    \tchmod 0440 /etc/sudoers.d/vagrant\n
+    \tSHELL\n
+    end\n
+    "
+children: #copied directly to ansible inventory
+  kube-master:
+    hosts:
+      kubenode1:
+      kubenode2:
+  kube-node:
+    hosts:
+      kubenode1:
+      kubenode2:
+      kubenode3:
+  etcd:
+    hosts:
+      kubenode1:
+      kubenode2:
+      kubenode3:
+  k8s-cluster:
+    children:
+      kube-master:
+      kube-node:
+  calico-rr:
+    hosts: {}
