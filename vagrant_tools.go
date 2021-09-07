@@ -1,5 +1,5 @@
 /*
-  Copyright (c) 2021 Resurgent Technology
+  Copyright (c) 2021 Resurgent Technologies
 */
 
 package main
