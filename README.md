@@ -60,6 +60,11 @@ NOTE: Download the VMware-ovftool-XXXXXX to ./downloads in this working copy.  U
 ```
 docker build . --tag vagrant_tools
 ```
+Magic version
+```
+export GIT_COMMIT=$(git rev-list -1 HEAD) && \
+go build -ldflags "-X main.GitCommit=$GIT_COMMIT"
+```
 ## Running
 ```
 docker run -it --rm --network=host -v `pwd`:/mnt -w /mnt vagrant_tools:latest vagrant_tools -configfile configs/esxi_sample.yaml -action up -esxi_hostname 10.10.10.10 -esxi_username spongebob -esxi_password crabbypatty

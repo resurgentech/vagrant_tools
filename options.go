@@ -20,6 +20,7 @@ type Options struct {
 	esxi_hostname         *string                     // esxi hostname to connect to
 	esxi_username         *string                     // esxi username to login into esxi_hostname
 	esxi_password         *string                     // esxi password to login into esxi_hostname
+	version               *bool                       // print version number
 	machinesPath          string                      // directory where vagrant machine directories are stored
 	machineTemplates      interface{}                 //machine_templates templates
 	vagrantfileTemplates  map[string]string           //Vagrantfile templates

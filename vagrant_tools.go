@@ -2,7 +2,6 @@
   Copyright (c) 2021 Resurgent Technologies
 */
 
-
 package main
 
 import (
@@ -22,8 +21,11 @@ func (o *Options) ParseCli() {
 	o.esxi_hostname = flag.String("esxi_hostname", "", "[Optional] esxi hostname to pass into Vagrantfile when using vmware_esxi provider.")
 	o.esxi_username = flag.String("esxi_username", "", "[Optional] esxi username to pass into Vagrantfile when using vmware_esxi provider.")
 	o.esxi_password = flag.String("esxi_password", "", "[Optional] esxi password to pass into Vagrantfile when using vmware_esxi provider.")
+	o.version = flag.Bool("version", false, "Print version number.")
 	flag.Parse()
 }
+
+var GitCommit string
 
 /*
   Putting it all together
@@ -31,6 +33,12 @@ func (o *Options) ParseCli() {
 func main() {
 	var options Options
 	options.ParseCli()
+
+	if *options.version {
+		fmt.Printf("vagrant_tools, git commit: %s\n", GitCommit)
+		return
+	}
+
 	fmt.Println(*options.configfile)
 	options.ReadConfig()
 
