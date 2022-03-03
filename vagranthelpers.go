@@ -10,7 +10,14 @@ import (
 */
 func MakeVagrantfile(name string, options *Options) (string, error) {
 	var output string
-	machinedef := options.machineConfigurations[name].(map[interface{}]interface{})
+	var machinedef map[interface{}]interface{}
+
+	if _, ok := options.machineConfigurations[name]; ok {
+		machinedef = options.machineConfigurations[name].(map[interface{}]interface{})
+	} else {
+		return "", nil
+	}
+
 	templatename := machinedef["vagrantfile_template"]
 	if templatename == nil {
 		templatename = "default"
