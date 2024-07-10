@@ -22,8 +22,8 @@
     - name: Install Vagrant libvirt provider
       shell: vagrant plugin install vagrant-libvirt
 
-    - name: Install Vagrant esxi provider
-      shell: vagrant plugin install vagrant-vmware-esxi
+    # - name: Install Vagrant esxi provider
+    #   shell: vagrant plugin install vagrant-vmware-esxi
 
     - name: Install Vagrant reload plugin
       shell: vagrant plugin install vagrant-reload

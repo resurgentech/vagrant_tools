@@ -1,0 +1,40 @@
+machines:
+  path: "machines"
+  vagrant_provider: libvirt
+  list:
+    ubuntu2204:
+      vagrant:
+        box: generic/ubuntu2204
+      machine_template: default
+machine_templates:
+  default:
+    vagrant:
+      memory: 1024
+      cpus: 1
+      box: generic/ubuntu2004
+    ansible:
+      ansible_user: vagrant
+      ansible_password: vagrant
+      ansible_become: true
+vagrantfile_templates:
+  default:
+    "
+    # -*- mode: ruby -*-\n
+    # vi: set ft=ruby :\n
+    Vagrant.configure(\"2\") do |vconfig|\n
+     \thostname = \"{hostname}\"\n
+     \tlocale = \"en_US.UTF.8\"\n
+     \tconfig.vm.box = \"{box}\"\n
+     \tconfig.vm.synced_folder \".\", \"/vagrant\", disabled: true\n
+     \tconfig.vm.provider \"libvirt\" do |v|\n
+     \t\tv.memory = {memory}\n
+     \t\tv.cpus = {cpus}\n
+     \tend\n
+     \tconfig.vm.provision \"shell\", inline: <<-SHELL\n
+     \techo \"vagrant ALL=(ALL) NOPASSWD: ALL\" > /etc/sudoers.d/vagrant\n
+     \tchmod 0440 /etc/sudoers.d/vagrant\n
+     \tSHELL\n
+    end\n
+    "
+children:
+  ubuntu2204:
